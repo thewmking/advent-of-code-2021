@@ -15,7 +15,7 @@ def binary_to_float(binary)
   binary.to_i(2)
 end
 
-data_by_column = {}
+data_by_column = []
 
 # group array data by index into new object
 file_data.each do |row|
@@ -28,9 +28,9 @@ file_data.each do |row|
   end
 end
 
-data_by_column.each do |key, value|
+data_by_column.each do |values|
   # gets min and max at once
-  e, g = value.minmax_by{ |i| value.count(i) }
+  e, g = values.minmax_by{ |i| values.count(i) }
   @gamma << g
   @epsilon << e
 end
