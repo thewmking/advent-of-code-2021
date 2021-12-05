@@ -2,7 +2,7 @@
 require 'pry'
 
 file = File.open('day-4/input.txt')
-file_data = file.readlines.map(&:chomp)
+@file_data = file.readlines.map(&:chomp)
 file.close
 
 # The submarine has a bingo subsystem to help passengers (currently,
@@ -13,19 +13,39 @@ file.close
 # of all unmarked numbers on that board; Then, multiply that sum by the number
 # that was just called when the board won to get the final score.
 
-@bingo_numbers = file_data.shift.split(',')
+def init_bingo
+  set_bingo_numbers
+  set_drawn_numbers
+  set_winner
+  set_boards
+end
+
+def set_bingo_numbers
+  @bingo_numbers = @file_data.shift.split(',')
+end
+
+def set_drawn_numbers
+  @drawn_numbers = []
+end
+
+def set_winner
+  @winner = nil
+end
 
 # split input rows into board groups
-boards = []
-boards_index = 0
-file_data.each do |row|
-  next if row.empty?
-  boards_index += 1 if boards[boards_index]&.length == 5
 
-  if boards[boards_index].nil?
-    boards[boards_index] = [row.split(' ')]
-  else
-    boards[boards_index] << row.split(' ')
+def set_boards
+  @boards = []
+  boards_index = 0
+  @file_data.each do |row|
+    next if row.empty?
+    boards_index += 1 if @boards[boards_index]&.length == 5
+
+    if @boards[boards_index].nil?
+      @boards[boards_index] = [row.split(' ')]
+    else
+      @boards[boards_index] << row.split(' ')
+    end
   end
 end
 
@@ -46,9 +66,6 @@ def data_by_column(data)
 
   data_by_column
 end
-
-@drawn_numbers = []
-@winner = nil
 
 def draw_number
   @drawn_numbers << @bingo_numbers.shift
@@ -76,11 +93,13 @@ def winning_board(board)
   check_board(board)
 end
 
+init_bingo
+
 @bingo_numbers.length.times do |num|
   break if !@winner.nil?
   draw_number
   next if @drawn_numbers.length < 5
-  boards.each do |board|
+  @boards.each do |board|
     win = check_board(board)
     next if !win
     @winner = board
