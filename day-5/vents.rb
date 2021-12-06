@@ -64,8 +64,9 @@ def build_matrix
 end
 
 def calculate_path(pair)
-  # lifted from my ruby chess game for calulating the path of a rook
-  # https://github.com/thewmking/ruby-chess/blob/master/lib/chess/rook.rb#L31
+  # lifted from my ruby chess game for calulating the path of a queen
+  # https://github.com/thewmking/ruby-chess/blob/master/lib/chess/queen.rb
+  range = (0..(@columns-1))
   path_coordinates = [pair[0], pair[1]]
 
   start_col, start_row = pair[0]
@@ -73,19 +74,27 @@ def calculate_path(pair)
 
   x, y = (end_col - start_col), (end_row - start_row)
 
-  if x != 0
+  if (x != 0 && y != 0) && (x.abs == y.abs)
+    i = x.abs/x
+    j = y.abs/y
+    (x.abs - 1).times do
+      path_coordinates << [start_col + i, start_row + j] if range.include?(start_col + i) && range.include?(start_row + j)
+      i += 1 if x > 0
+      i -= 1 if x < 0
+      j += 1 if y > 0
+      j -= 1 if y < 0
+    end
+  elsif x != 0
     i = x.abs/x
     (x.abs - 1).times do
-      path_coordinates << [start_col + i, start_row] if (0..(@columns-1)).include?(start_col + i)
+      path_coordinates << [start_col + i, start_row] if range.include?(start_col + i)
       i += 1 if x > 0
       i -= 1 if x < 0
     end
-  end
-
-  if y != 0
+  elsif y != 0
     j = y.abs/y
     (y.abs - 1).times do
-      path_coordinates << [start_col, start_row + j] if (0..(@rows-1)).include?(start_row + j)
+      path_coordinates << [start_col, start_row + j] if range.include?(start_row + j)
       j += 1 if y > 0
       j -= 1 if y < 0
     end
@@ -108,6 +117,16 @@ def pair_valid?(pair)
   (pair[0][0] == pair[1][0]) || (pair[0][1] == pair[1][1])
 end
 
+def count_danger_zones
+  zones = 0
+  @matrix.each do |row|
+    row.each do |cell|
+      zones += 1 if cell >= 2
+    end
+  end
+  zones
+end
+
 parse_input
 build_matrix
 
@@ -117,11 +136,51 @@ build_matrix
   end
 end
 
-danger_zones = 0
-@matrix.each do |row|
-  row.each do |cell|
-    danger_zones += 1 if cell >= 2
+count_danger_zones
+
+puts count_danger_zones # => 6572
+
+# --- Part Two ---
+# Unfortunately, considering only horizontal and vertical lines doesn't give you
+# the full picture; you need to also consider diagonal lines.
+
+# Because of the limits of the hydrothermal vent mapping system, the lines in your
+# list will only ever be horizontal, vertical, or a diagonal line at exactly 45 degrees.
+# In other words:
+
+# - An entry like 1,1 -> 3,3 covers points 1,1, 2,2, and 3,3.
+# - An entry like 9,7 -> 7,9 covers points 9,7, 8,8, and 7,9.
+
+def valid_diagonal_path(origin)
+  # also lifted from my ruby chess game
+  range = (0..(@columns-1))
+  col, row = origin
+  path_coordinates = []
+
+  i = 0
+  until i == @columns-1
+    path_coordinates << [col - i, row - i] if range.include?(col - i) && range.include?(row - i)
+    path_coordinates << [col - i, row + i] if range.include?(col - i) && range.include?(row + i)
+    path_coordinates << [col + i, row + i] if range.include?(col + i) && range.include?(row + i)
+    path_coordinates << [col + i, row - i] if range.include?(col + i) && range.include?(row - i)
+    i += 1
+  end
+
+  path_coordinates
+end
+
+def pair_valid_diagonal?(pair)
+  valid_coords = valid_diagonal_path(pair[0])
+  valid_coords.include? pair[1]
+end
+
+
+build_matrix # again for round 2
+
+@coordinate_pairs.each do |pair|
+  if pair_valid?(pair) || pair_valid_diagonal?(pair)
+    add_coordinate_pair(pair)
   end
 end
 
-puts danger_zones # => 6572
+puts count_danger_zones # => 21466
