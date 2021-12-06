@@ -7,3 +7,5 @@ my solutions for Advent of Code 2021 - https://adventofcode.com/
 **Day 3** - [Binary Diagnostic](https://adventofcode.com/2021/day/3) - [solution](https://github.com/thewmking/advent-of-code-2021/blob/main/day-3/binary.rb)
 
 **Day 4** - [Giant Squid Bingo](https://adventofcode.com/2021/day/4) - [solution](https://github.com/thewmking/advent-of-code-2021/blob/main/day-4/bingo.rb)
+
+**Day 4** - [Hydrothermal Venture](https://adventofcode.com/2021/day/5) - [solution](https://github.com/thewmking/advent-of-code-2021/blob/main/day-5/vents.rb)
