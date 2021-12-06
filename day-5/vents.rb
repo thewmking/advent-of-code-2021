@@ -1,7 +1,7 @@
 # --- Day 5: Hydrothermal Venture ---
 require 'pry'
 
-file = File.open('day-5/input-sample.txt')
+file = File.open('day-5/input.txt')
 @file_data = file.readlines.map(&:chomp)
 file.close
 
@@ -45,8 +45,83 @@ file.close
 
 # Consider only horizontal and vertical lines. At how many points do at least two lines overlap?
 
-# TODO: parse input file
+def parse_input
+  @coordinate_pairs = @file_data.map { |row| row.split(' -> ').map { |coord| coord.split(',').map { |i| i.to_i } } }
+  end
 
-# TODO: build coordinate matrix from input
+def get_columns # x coordinate
+  @coordinate_pairs.map{|set| set.map{|coord| coord[0]}}.flatten.max.to_i + 1
+end
 
-# TODO: calculate points where two lines overlap
+def get_rows # y coordinate
+  @coordinate_pairs.map{|set| set.map{|coord| coord[1]}}.flatten.max.to_i + 1
+end
+
+def build_matrix
+  @rows = get_rows
+  @columns = get_columns
+  @matrix = Array.new(@columns) { Array.new(@rows) {0} }
+end
+
+def calculate_path(pair)
+  # lifted from my ruby chess game for calulating the path of a rook
+  # https://github.com/thewmking/ruby-chess/blob/master/lib/chess/rook.rb#L31
+  path_coordinates = [pair[0], pair[1]]
+
+  start_col, start_row = pair[0]
+  end_col, end_row = pair[1]
+
+  x, y = (end_col - start_col), (end_row - start_row)
+
+  if x != 0
+    i = x.abs/x
+    (x.abs - 1).times do
+      path_coordinates << [start_col + i, start_row] if (0..(@columns-1)).include?(start_col + i)
+      i += 1 if x > 0
+      i -= 1 if x < 0
+    end
+  end
+
+  if y != 0
+    j = y.abs/y
+    (y.abs - 1).times do
+      path_coordinates << [start_col, start_row + j] if (0..(@rows-1)).include?(start_row + j)
+      j += 1 if y > 0
+      j -= 1 if y < 0
+    end
+  end
+
+  path_coordinates.uniq
+end
+
+def add_coordinate_pair(pair)
+  path_coordinates = calculate_path(pair)
+  path_coordinates.each do |coord|
+    x, y = coord
+    @matrix[y][x] += 1
+  end
+end
+
+def pair_valid?(pair)
+  # For now, only consider horizontal and vertical lines:
+  # lines where either x1 = x2 or y1 = y2.
+  (pair[0][0] == pair[1][0]) || (pair[0][1] == pair[1][1])
+end
+
+parse_input
+build_matrix
+
+@coordinate_pairs.each do |pair|
+  if pair_valid?(pair)
+    add_coordinate_pair(pair)
+  end
+end
+
+danger_zones = 0
+@matrix.each do |row|
+  row.each do |cell|
+    danger_zones += 1 if cell >= 2
+  end
+end
+
+puts danger_zones # => 6572
