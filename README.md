@@ -10,4 +10,6 @@ my solutions for Advent of Code 2021 - https://adventofcode.com/
 
 **Day 5** - [Hydrothermal Venture](https://adventofcode.com/2021/day/5) - [solution](https://github.com/thewmking/advent-of-code-2021/blob/main/day-5/vents.rb)
 
-**Day 5** - [Lanternfish](https://adventofcode.com/2021/day/6) - [solution](https://github.com/thewmking/advent-of-code-2021/blob/main/day-6/lanternfish.rb)
+**Day 6** - [Lanternfish](https://adventofcode.com/2021/day/6) - [solution](https://github.com/thewmking/advent-of-code-2021/blob/main/day-6/lanternfish.rb)
+
+**Day 7** - [Lanternfish](https://adventofcode.com/2021/day/7) - [solution](https://github.com/thewmking/advent-of-code-2021/blob/main/day-7/crab_fuel.rb)
